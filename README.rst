@@ -16,12 +16,14 @@ For example::
 
   import logging
   import sys
-  from python-elastic-logstash import ElasticHandler, ElasticFormatter
+  from python_elastic_logstash import ElasticHandler, ElasticFormatter
 
   logger = logging.getLogger('python-elastic-logstash')
   logger.setLevel(logging.DEBUG)
 
-  elastic_handler = ElasticHandler('http://localhost:9200')
+  elasticsearch_endpoint = 'http://localhost:9200' # No trailing slash
+
+  elastic_handler = ElasticHandler(elasticsearch_endpoint)
   elastic_handler.setFormatter(ElasticFormatter(logger.name))
 
   stream_handler = logging.StreamHandler()

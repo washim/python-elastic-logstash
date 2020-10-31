@@ -1,7 +1,7 @@
 from distutils.core import setup
 setup(
-    name='python-elastic-logstash',
-    packages=['python-elastic-logstash'],
+    name='python_elastic_logstash',
+    packages=['python_elastic_logstash'],
     version='0.1.0',
     description='Python logging handler for elastic search.',
     long_description=open('README.rst').read(),
