@@ -9,7 +9,7 @@ setup(
     author='Washim Ahmed',
     author_email='washim.ahmed@gmail.com',
     url='https://github.com/washim/python-elastic-logstash',
-    install_requires=[
+    setup_requires=[
         'requests'
     ],
     classifiers=[
