@@ -1,0 +1,27 @@
+from distutils.core import setup
+setup(
+    name='python-elastic-logstash',
+    packages=['python-elastic-logstash'],
+    version='0.1.0',
+    description='Python logging handler for elastic search.',
+    long_description=open('README.rst').read(),
+    license='MIT',
+    author='Washim Ahmed',
+    author_email='washim.ahmed@gmail.com',
+    url='https://github.com/washim/python-elastic-logstash',
+    install_requires=[
+        'requests'
+    ],
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: MIT License',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 3',
+        'Topic :: Internet :: WWW/HTTP',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+        'Topic :: System :: Logging',
+    ]
+)
