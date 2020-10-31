@@ -45,12 +45,12 @@ Kibana Create Index Page
 ===============================
 
 .. image:: https://raw.githubusercontent.com/washim/python-elastic-logstash/master/index.png
-  :width: 600
+  :width: 780
   :align: center
 
 Kibana Discover Page
 ===============================
 
 .. image:: https://raw.githubusercontent.com/washim/python-elastic-logstash/master/discover.png
-  :width: 600
+  :width: 780
   :align: center
