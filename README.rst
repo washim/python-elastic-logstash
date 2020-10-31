@@ -32,6 +32,7 @@ For example::
   logger.addHandler(elastic_handler)
   logger.addHandler(stream_handler)
 
+  # Extra is optional.
   extra = {
       'elastic_fields': {
           'version': 'python version: ' + repr(sys.version_info)
@@ -39,3 +40,17 @@ For example::
   }
 
   logger.debug("Python elastic logstash configured", extra=extra)
+
+Kibana Create Index
+===============================
+
+.. image:: index.png
+  :width: 600
+  :align: center
+
+Kibana Discover
+===============================
+
+.. image:: discover.png
+  :width: 600
+  :align: center
