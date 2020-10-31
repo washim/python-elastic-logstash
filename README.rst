@@ -71,7 +71,7 @@ Example::
               'class': 'python_elastic_logstash.ElasticHandler',
               'url': 'http://localhost:9200'
           },
-    	    'console': {
+          'console': {
               'class': 'logging.StreamHandler',
           },
        },
