@@ -54,3 +54,33 @@ Kibana Discover Page
 .. image:: https://raw.githubusercontent.com/washim/python-elastic-logstash/master/discover.png
   :width: 780
   :align: center
+
+Using Django
+===============================
+Modify your settings.py
+
+Example::
+
+  LOGGING = {
+      ...
+      'version': 1,
+      'disable_existing_loggers': False,
+      'handlers': {
+          'elastic_handler': {
+              'level': 'INFO',
+              'class': 'python_elastic_logstash.ElasticHandler',
+              'url': 'http://localhost:9200'
+          },
+    	    'console': {
+              'class': 'logging.StreamHandler',
+          },
+       },
+      'loggers': {
+          'django': {
+              'handlers': ['elastic_handler', 'console'],
+              'level': 'INFO',
+              'propagate': True,
+          },
+      }
+      ...
+  }

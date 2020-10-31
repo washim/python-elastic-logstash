@@ -6,7 +6,7 @@ import uuid
 
 
 class ElasticHandler(logging.Handler):
-    def __init__(self, url, token=False, elastic_index=False):
+    def __init__(self, url, token='', elastic_index=''):
         """ It supports Basic Authentication only
 
         The <token> is computed as base64(USERNAME:PASSWORD)
@@ -14,6 +14,7 @@ class ElasticHandler(logging.Handler):
         """
         super(ElasticHandler, self).__init__()
         self.url = url
+        self.url_duplicate = url
         self.token = token
         self.elastic_index = elastic_index
 
@@ -25,15 +26,24 @@ class ElasticHandler(logging.Handler):
         if not self.elastic_index:
             self.elastic_index = 'python-elastic-logstash' if record.__dict__['name'] == '__main__' else record.__dict__['name']
 
-        self.url += '/' + self.elastic_index + '/_doc/' + str(uuid.uuid1())
+        self.url += '/' + self.elastic_index.replace('.', '-') + '/_doc/' + str(uuid.uuid1())
 
-        log_entry = self.format(record)
-        response = ''
+        response, log_entry = '', self.format(record)
+
+        if 'message' not in log_entry:
+            log_entry = json.dumps({
+                'message': record.msg,
+                'timestamp': datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+            })
 
         try:
-            response = requests.post(self.url, log_entry, headers=headers).content
+            response = requests.post(self.url, log_entry, headers=headers).json()
+            if response.get('error'):
+                print('Elastic Search Error: ' + str(response['error']['reason']))
         except requests.exceptions.ConnectionError:
             print('Unable to connect elastic host')
+
+        self.url = self.url_duplicate
 
         return response
 
@@ -44,8 +54,10 @@ class ElasticFormatter(logging.Formatter):
         self.logger_name = logger_name
 
     def format(self, record):
-        data = {'message': record.msg,
-                'timestamp': datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ')}
+        data = {
+            'message': record.msg,
+            'timestamp': datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        }
 
         if self.logger_name:
             data['logger_name'] = self.logger_name
