@@ -44,13 +44,13 @@ For example::
 Kibana Create Index Page
 ===============================
 
-.. image:: https://github.com/washim/python-elastic-logstash/blob/master/index.png
+.. image:: https://raw.githubusercontent.com/washim/python-elastic-logstash/master/index.png
   :width: 600
   :align: center
 
 Kibana Discover Page
 ===============================
 
-.. image:: https://github.com/washim/python-elastic-logstash/blob/master/index.png
+.. image:: https://raw.githubusercontent.com/washim/python-elastic-logstash/master/discover.png
   :width: 600
   :align: center
