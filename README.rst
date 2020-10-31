@@ -41,16 +41,16 @@ For example::
 
   logger.debug("Python elastic logstash configured", extra=extra)
 
-Kibana Create Index
+Kibana Create Index Page
 ===============================
 
-.. image:: index.png
+.. image:: https://github.com/washim/python-elastic-logstash/blob/master/index.png
   :width: 600
   :align: center
 
-Kibana Discover
+Kibana Discover Page
 ===============================
 
-.. image:: discover.png
+.. image:: https://github.com/washim/python-elastic-logstash/blob/master/index.png
   :width: 600
   :align: center
