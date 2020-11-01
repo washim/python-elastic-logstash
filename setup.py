@@ -2,12 +2,13 @@ from setuptools import setup
 setup(
     name='python_elastic_logstash',
     packages=['python_elastic_logstash'],
-    version='0.1.5',
+    version='0.1.6',
     description='Python logging handler for elastic search.',
     long_description=open('README.rst').read(),
     license='MIT',
     author='Washim Ahmed',
     author_email='washim.ahmed@gmail.com',
+    python_requires='>=3',
     url='https://github.com/washim/python-elastic-logstash',
     setup_requires=[
         'requests'

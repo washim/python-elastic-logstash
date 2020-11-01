@@ -3,6 +3,7 @@ import datetime
 import json
 import requests
 import uuid
+import socket
 
 
 class ElasticHandler(logging.Handler):
@@ -23,16 +24,21 @@ class ElasticHandler(logging.Handler):
         if self.token:
             headers['Authorization'] = 'Basic ' + self.token
 
-        if not self.elastic_index:
-            self.elastic_index = 'python-elastic-logstash' if record.__dict__['name'] == '__main__' else record.__dict__['name']
+        self.elastic_index = self.elastic_index.lower()
 
-        self.url += '/' + self.elastic_index.replace('.', '-') + '/_doc/' + str(uuid.uuid1())
+        if self.elastic_index in ['', '__main__']:
+            self.elastic_index = 'python-elastic-logstash'
+        elif '.' in self.elastic_index:
+            self.elastic_index = self.elastic_index.replace('.', '-')
+
+        self.url += '/' + self.elastic_index + '/_doc/' + str(uuid.uuid1())
 
         response, log_entry = '', self.format(record)
 
         if 'message' not in log_entry:
             log_entry = json.dumps({
-                'message': record.msg,
+                'message': log_entry,
+                'source_host': socket.gethostbyname(socket.gethostname()),
                 'timestamp': datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ')
             })
 
@@ -56,11 +62,9 @@ class ElasticFormatter(logging.Formatter):
     def format(self, record):
         data = {
             'message': record.msg,
+            'source_host': socket.gethostbyname(socket.gethostname()),
             'timestamp': datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ')
         }
-
-        if self.logger_name:
-            data['logger_name'] = self.logger_name
 
         extra = record.__dict__.get('elastic_fields')
         if extra:

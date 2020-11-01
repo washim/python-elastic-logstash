@@ -18,6 +18,10 @@ For example::
   import sys
   from python_elastic_logstash import ElasticHandler, ElasticFormatter
 
+  """
+  Provide logger name simple without any special character
+  Logger name will become as Elastic Search Index
+  """
   logger = logging.getLogger('python-elastic-logstash')
   logger.setLevel(logging.DEBUG)
 
@@ -67,17 +71,14 @@ Example::
       'disable_existing_loggers': False,
       'handlers': {
           'elastic_handler': {
-              'level': 'INFO',
+              'level': 'DEBUG',
               'class': 'python_elastic_logstash.ElasticHandler',
               'url': 'http://localhost:9200'
-          },
-          'console': {
-              'class': 'logging.StreamHandler',
-          },
+          }
        },
       'loggers': {
           'django': {
-              'handlers': ['elastic_handler', 'console'],
+              'handlers': ['elastic_handler'],
               'level': 'INFO',
               'propagate': True,
           },
