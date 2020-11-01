@@ -84,10 +84,15 @@ Example::
           'level': 'WARNING',
       },
       'loggers': {
-          'django': {
-              'handlers': ['elastic_handler', 'console'],
+          'django.request': {
+              'handlers': ['elastic_handler'],
               'level': 'DEBUG',
               'propagate': True,
+          },
+          'python-elastic-logstash': {
+            'handlers': ['elastic_handler'],
+            'level': 'DEBUG',
+            'propagate': True,
           },
       }
       ...
