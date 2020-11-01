@@ -74,11 +74,18 @@ Example::
               'level': 'DEBUG',
               'class': 'python_elastic_logstash.ElasticHandler',
               'url': 'http://localhost:9200'
-          }
-       },
+          },
+          'console': {
+              'class': 'logging.StreamHandler'
+          },
+      },
+      'root': {
+          'handlers': ['console'],
+          'level': 'WARNING',
+      },
       'loggers': {
           'django': {
-              'handlers': ['elastic_handler'],
+              'handlers': ['elastic_handler', 'console'],
               'level': 'DEBUG',
               'propagate': True,
           },
