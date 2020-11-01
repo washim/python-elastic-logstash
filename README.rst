@@ -79,7 +79,7 @@ Example::
       'loggers': {
           'django': {
               'handlers': ['elastic_handler'],
-              'level': 'INFO',
+              'level': 'DEBUG',
               'propagate': True,
           },
       }
