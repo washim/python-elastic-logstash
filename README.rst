@@ -90,9 +90,9 @@ Example::
               'propagate': True,
           },
           'python-elastic-logstash': {
-            'handlers': ['elastic_handler'],
-            'level': 'DEBUG',
-            'propagate': True,
+              'handlers': ['elastic_handler'],
+              'level': 'DEBUG',
+              'propagate': True,
           },
       }
       ...
