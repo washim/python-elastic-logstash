@@ -28,7 +28,7 @@ For example::
   elasticsearch_endpoint = 'http://localhost:9200' # No trailing slash
 
   elastic_handler = ElasticHandler(elasticsearch_endpoint)
-  elastic_handler.setFormatter(ElasticFormatter(logger.name))
+  elastic_handler.setFormatter(ElasticFormatter())
 
   stream_handler = logging.StreamHandler()
   stream_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))

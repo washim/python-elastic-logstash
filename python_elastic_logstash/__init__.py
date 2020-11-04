@@ -24,12 +24,12 @@ class ElasticHandler(logging.Handler):
         if self.token:
             headers['Authorization'] = 'Basic ' + self.token
 
-        self.elastic_index = self.elastic_index.lower()
+        if not self.elastic_index:
+            self.elastic_index = 'python-elastic-logstash' if record.__dict__['name'] == '__main__' else record.__dict__['name']
 
-        if self.elastic_index in ['', '__main__']:
-            self.elastic_index = 'python-elastic-logstash'
-        elif '.' in self.elastic_index:
-            self.elastic_index = self.elastic_index.replace('.', '-')
+        self.elastic_index = self.elastic_index.lower()
+        for item in ['.', '#', '_', '+', '$', '@', '&', '*', '!', '(', ')', '=', '|']:
+            self.elastic_index = self.elastic_index.replace(item, '-')
 
         self.url += '/' + self.elastic_index + '/_doc/' + str(uuid.uuid1())
 
@@ -46,6 +46,7 @@ class ElasticHandler(logging.Handler):
             response = requests.post(self.url, log_entry, headers=headers).json()
             if response.get('error'):
                 print('Elastic Search Error: ' + str(response['error']['reason']))
+
         except requests.exceptions.ConnectionError:
             print('Unable to connect elastic host')
 
@@ -55,13 +56,13 @@ class ElasticHandler(logging.Handler):
 
 
 class ElasticFormatter(logging.Formatter):
-    def __init__(self, logger_name=None):
+    def __init__(self):
         super(ElasticFormatter, self).__init__()
-        self.logger_name = logger_name
 
     def format(self, record):
         data = {
             'message': record.msg,
+            'logger_name': record.name,
             'source_host': socket.gethostbyname(socket.gethostname()),
             'timestamp': datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ')
         }
