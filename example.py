@@ -9,9 +9,9 @@ Logger name will become as Elastic Search Index
 logger = logging.getLogger('python-elastic-logstash')
 logger.setLevel(logging.DEBUG)
 
-elasticsearch_endpoint = 'http://localhost:9200' # No trailing slash
+elasticsearch_endpoint = 'http://localhost:9200'  # No trailing slash
 
-elastic_handler = ElasticHandler(elasticsearch_endpoint)
+elastic_handler = ElasticHandler(elasticsearch_endpoint, 'dev')  # Second argument is optional
 elastic_handler.setFormatter(ElasticFormatter())
 
 stream_handler = logging.StreamHandler()

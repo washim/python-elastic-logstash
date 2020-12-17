@@ -7,7 +7,7 @@ import socket
 
 
 class ElasticHandler(logging.Handler):
-    def __init__(self, url, token='', elastic_index=''):
+    def __init__(self, url, environment='dev', token='', elastic_index=''):
         """ It supports Basic Authentication only
 
         The <token> is computed as base64(USERNAME:PASSWORD)
@@ -15,6 +15,7 @@ class ElasticHandler(logging.Handler):
         """
         super(ElasticHandler, self).__init__()
         self.url = url
+        self.environment = environment
         self.url_duplicate = url
         self.token = token
         self.elastic_index = elastic_index
@@ -35,15 +36,12 @@ class ElasticHandler(logging.Handler):
 
         response, log_entry = '', self.format(record)
 
-        if 'message' not in log_entry:
-            log_entry = json.dumps({
-                'message': log_entry,
-                'source_host': socket.gethostbyname(socket.gethostname()),
-                'timestamp': datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-            })
+        log_entry['source_host'] = socket.gethostbyname(socket.gethostname())
+        log_entry['source_environment'] = self.environment
+        log_entry['timestamp'] = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ')
 
         try:
-            response = requests.post(self.url, log_entry, headers=headers).json()
+            response = requests.post(self.url, json.dumps(log_entry), headers=headers).json()
             if response.get('error'):
                 print('Elastic Search Error: ' + str(response['error']['reason']))
 
@@ -60,16 +58,10 @@ class ElasticFormatter(logging.Formatter):
         super(ElasticFormatter, self).__init__()
 
     def format(self, record):
-        data = {
-            'message': record.msg,
-            'logger_name': record.name,
-            'source_host': socket.gethostbyname(socket.gethostname()),
-            'timestamp': datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-        }
-
+        data = dict(message=record.msg, logger_name=record.name)
         extra = record.__dict__.get('elastic_fields')
         if extra:
             for key, value in extra.items():
                 data[key] = value
 
-        return json.dumps(data)
+        return data
