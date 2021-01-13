@@ -4,6 +4,7 @@ import json
 import requests
 import uuid
 import socket
+import os
 
 
 class ElasticHandler(logging.Handler):
@@ -16,7 +17,6 @@ class ElasticHandler(logging.Handler):
         super(ElasticHandler, self).__init__()
         self.url = url
         self.environment = environment
-        self.url_duplicate = url
         self.token = token
         self.elastic_index = elastic_index
 
@@ -32,7 +32,7 @@ class ElasticHandler(logging.Handler):
         for item in ['.', '#', '_', '+', '$', '@', '&', '*', '!', '(', ')', '=', '|']:
             self.elastic_index = self.elastic_index.replace(item, '-')
 
-        self.url += '/' + self.elastic_index + '/_doc/' + str(uuid.uuid1())
+        url = self.url + '/' + self.elastic_index + '/_doc/' + str(uuid.uuid1())
 
         response, log_entry = '', self.format(record)
 
@@ -40,15 +40,28 @@ class ElasticHandler(logging.Handler):
         log_entry['source_environment'] = self.environment
         log_entry['timestamp'] = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ')
 
+        backup_logs_path = os.path.join(os.getcwd(), '.python_elastic_logstash')
+
         try:
-            response = requests.post(self.url, json.dumps(log_entry), headers=headers).json()
+            response = requests.post(url, json.dumps(log_entry), headers=headers).json()
             if response.get('error'):
                 print('Elastic Search Error: ' + str(response['error']['reason']))
 
-        except requests.exceptions.ConnectionError:
-            print('Unable to connect elastic host')
+            if os.path.exists(backup_logs_path):
+                with open(backup_logs_path, 'r') as fp:
+                    log_data = fp.read()
 
-        self.url = self.url_duplicate
+                bres = requests.post(f'{self.url}/_bulk', data=log_data, headers={'Content-Type': 'application/json'}).json()
+                if bres.get('errors') is False:
+                    log_entry['message'] = '%d items recovered from previously failed logstash.' % len(bres['items'])
+                    requests.post(url, json.dumps(log_entry), headers=headers).json()
+                    os.remove(backup_logs_path)
+
+        except requests.exceptions.ConnectionError:
+            print('Unable to connect elastic host. Logstash will restore when available.')
+            with open(backup_logs_path, 'a+') as fp:
+                fp.write("""{"index":{"_index":"%s","_id":"%s"}}""" % (self.elastic_index, str(uuid.uuid1())) + "\n")
+                fp.write(json.dumps(log_entry) + "\n")
 
         return response
 
