@@ -36,9 +36,22 @@ class ElasticHandler(logging.Handler):
 
         response, log_entry = '', self.format(record)
 
-        log_entry['source_host'] = socket.gethostbyname(socket.gethostname())
-        log_entry['source_environment'] = self.environment
-        log_entry['timestamp'] = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        if isinstance(log_entry, str):
+            log_entry = {
+                "message": log_entry,
+                "logger_name": self.elastic_index,
+                "source_host": socket.gethostbyname(socket.gethostname()),
+                "source_environment": self.environment,
+                "timestamp": datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+            }
+        else:
+            log_entry['source_host'] = socket.gethostbyname(socket.gethostname())
+            log_entry['source_environment'] = self.environment
+            log_entry['timestamp'] = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+
+            if '_index' in log_entry:
+                self.elastic_index = log_entry['_index']
+                del log_entry['_index']
 
         backup_logs_path = os.path.join(os.getcwd(), '.python_elastic_logstash')
 
@@ -57,7 +70,7 @@ class ElasticHandler(logging.Handler):
                     requests.post(url, json.dumps(log_entry), headers=headers).json()
                     os.remove(backup_logs_path)
 
-        except requests.exceptions.ConnectionError:
+        except Exception:
             print('Unable to connect elastic host. Logstash will restore when available.')
             with open(backup_logs_path, 'a+') as fp:
                 fp.write("""{"index":{"_index":"%s","_id":"%s"}}""" % (self.elastic_index, str(uuid.uuid1())) + "\n")

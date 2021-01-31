@@ -2,7 +2,7 @@ from setuptools import setup
 setup(
     name='python_elastic_logstash',
     packages=['python_elastic_logstash'],
-    version='1.0.0',
+    version='2.0.0',
     description='Python logging handler for elastic search.',
     long_description=open('README.rst').read(),
     license='MIT',

@@ -9,6 +9,15 @@ Using pip::
 
   pip install python-elastic-logstash
 
+Features
+=================
+1. Sends Python logs in elasticsearch.
+2. Works with Python Django.
+3. Stop tolerance capability.
+4. Overwrite index from custom fields.
+
+If any issues please submit issues in https://github.com/washim/python-elastic-logstash/issues
+
 Usage
 =================
 
@@ -30,11 +39,7 @@ For example::
   elastic_handler = ElasticHandler(elasticsearch_endpoint, 'dev')  # Second argument is optional
   elastic_handler.setFormatter(ElasticFormatter())
 
-  stream_handler = logging.StreamHandler()
-  stream_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-
   logger.addHandler(elastic_handler)
-  logger.addHandler(stream_handler)
 
   # Extra is optional.
   extra = {
